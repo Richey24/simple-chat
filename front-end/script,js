@@ -1,0 +1,30 @@
+const socket = io("http://localhost:5000");
+const message = document.getElementById("message");
+const messageList = document.getElementById("list");
+
+function show() {
+  message.focus();
+}
+
+function send() {
+  if (message.value === "") return;
+  socket.emit("newMessage", message.value, socket.id);
+  message.value = "";
+  message.focus();
+}
+
+socket.on("message", (newMessage, id) => {
+  const recievedMessage = document.createElement("li");
+  const br = document.createElement("br");
+  const userName = document.createElement("span");
+  if (id === socket.id) {
+    userName.innerHTML = "You";
+  } else {
+    userName.innerHTML = "Other user";
+  }
+  recievedMessage.innerHTML = newMessage;
+  recievedMessage.appendChild(br);
+  recievedMessage.appendChild(userName);
+  messageList.appendChild(recievedMessage);
+  messageList.lastElementChild.scrollIntoView({ behavior: "smooth" });
+});
